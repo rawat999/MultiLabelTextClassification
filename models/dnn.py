@@ -4,7 +4,7 @@ import tensorflow as tf
 class ActionClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='action_block'):
         super(ActionClassifierBlock, self).__init__(name=name)
-        self.layer_1 = tf.keras.layers.LSTM(units=64,
+        self.layer_1 = tf.keras.layers.LSTM(units=128,
                                             dropout=0.2,
                                             recurrent_dropout=0.5,
                                             name='action_lstm'

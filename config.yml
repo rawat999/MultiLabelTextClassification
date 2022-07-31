@@ -1,0 +1,8 @@
+use_data_cols:
+  - 'transcription'
+  - 'action'
+  - 'object'
+  - 'location'
+epochs: 20
+batch_size: 128
+learning_rate: 1e-3
