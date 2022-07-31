@@ -3,8 +3,11 @@ import argparse
 import joblib
 from pathlib import Path
 import pandas as pd
+import tensorflow as tf
+from models import build_model
+from models import TextMultiLabeledClassifier
 from utils.handle_yaml import load_yaml
-from utils.metrices import print_f1_score
+from utils.metrices import f1_score
 from utils.args import print_args
 
 
@@ -24,25 +27,32 @@ def process_data(test_data, tokenizer_file, label_map_file):
     y_test_location = test_data['location'].apply(lambda x: label2idx['location'][x])
     y_test = [y_test_action, y_test_object, y_test_location]
 
-    return x_test, y_test
+    return x_test, y_test, tokenizer
 
 
 def main(test_file, model_file, tokenizer_file, label_map_file, configs):
     # data processing
     test_data = pd.read_csv(test_file,
                             usecols=configs['use_data_cols'])
-    x, y = process_data(test_data=test_data,
-                        tokenizer_file=tokenizer_file,
-                        label_map_file=label_map_file)
+    x, y, tokenizer = process_data(test_data=test_data,
+                                   tokenizer_file=tokenizer_file,
+                                   label_map_file=label_map_file)
 
     # model loading
-    model = joblib.load(model_file)
+    model = build_model(max_len=tokenizer.max_length,
+                        unique_tokens=len(tokenizer.tokenizer.word_index) + 1, )
+    model = tf.keras.models.load_model(model_file,
+                                       custom_objects={'model': model,
+                                                       'classifier': TextMultiLabeledClassifier,
+                                                       'f1_score': f1_score})
 
     # model prediction
-    y_preds = model.predict(x)
+    loss = model.evaluate(x)
+    print(loss)
 
     # print f1 scores
-    print_f1_score(y=y, y_pred=y_preds)
+    print("Evaluation Loss: {}".format(loss))
+    # print("Evaluation Accuracy: {}".format(accuracy))
 
 
 if __name__ == '__main__':
@@ -50,11 +60,11 @@ if __name__ == '__main__':
                                                  "You must have run train.py before evaluate.py",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter
                                      )
-    parser.add_argument("-d", "--data", type=Path, default="test.csv",
+    parser.add_argument("-d", "--data", type=Path, default="data/valid_data.csv",
                         help="Path to the file where test csv file is present.")
 
-    parser.add_argument("-m", "--model", type=Path, default="classifier.pkl",
-                        help="Path to the model file where pkl file is present.")
+    parser.add_argument("-m", "--model", type=Path, default="saved_model/my_model",
+                        help="Path to the directory where checkpoints saved.")
 
     parser.add_argument("-t", "--tokenizer", type=Path, default="tokenizer.pkl",
                         help="Path to the tokenizer file where pkl file is present.")
@@ -76,10 +86,10 @@ if __name__ == '__main__':
         raise Exception("{} is not exists".format(args.data))
 
     # model file
-    if os.path.exists(os.path.join(pwd, args.model)):
-        mod_file = os.path.join(pwd, args.model)
-    else:
-        raise Exception("{} is not exists".format(args.model))
+    # if os.path.exists(os.path.join(pwd, args.model)):
+    # mod_file = os.path.join(pwd, args.model)
+    # else:
+    #    raise Exception("{} is not exists".format(args.model))
 
     # tokenizer file
     if os.path.exists(os.path.join(pwd, args.tokenizer)):
@@ -106,7 +116,7 @@ if __name__ == '__main__':
     # Start model training
     print_args(args, parser)
     main(test_file=testing_file,
-         model_file=mod_file,
+         model_file=args.model,
          tokenizer_file=tok_file,
          label_map_file=lab_file,
          configs=config

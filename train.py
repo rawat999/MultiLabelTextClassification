@@ -1,6 +1,6 @@
 import os
 import tensorflow as tf
-from models import TextMultiLabeledClassifier
+from models import build_model
 from preprocessing import CustomTokenizer
 from utils.metrices import f1_score, print_f1_score
 import pandas as pd
@@ -15,15 +15,13 @@ import joblib
 logdir = "notebooks/logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
 tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir)
 
+# checkpoint_path = "checkpoints/cp.ckpt"
+# checkpoint_dir = os.path.dirname(checkpoint_path)
 
-def build_model(max_len,
-                unique_tokens,
-                embedding_size=50):
-    inputs = tf.keras.layers.Input(shape=(max_len,), name='input_layer')
-    tmlc = TextMultiLabeledClassifier(unique_tokens=unique_tokens,
-                                      emb_size=embedding_size, )
-    outputs = tmlc.call(inputs)
-    return tf.keras.models.Model(inputs=inputs, outputs=outputs)
+# Create a callback that saves the model's weights
+#cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+#                                                 save_weights_only=True,
+#                                                 verbose=1)
 
 
 def train(model, x_train, y_train, x_val, y_val, epochs=20, batch_size=128, lr=1e-4):
@@ -107,9 +105,10 @@ def main(train_file, valid_file, configs, is_save_model=True):
     print_f1_score(y=y_valid, y_pred=y_preds)
 
     if is_save_model:
-        print("Saving the models...")
+        print("Saving the tokenizer model...")
         joblib.dump(tokenizer, "tokenizer.pkl")
-        joblib.dump(model, "classifier.pkl")
+        print("Saving Model...")
+        model.save("saved_model/my_model")
     print("DONE.")
 
 

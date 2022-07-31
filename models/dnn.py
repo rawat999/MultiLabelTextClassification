@@ -19,6 +19,15 @@ class ActionClassifierBlock(tf.keras.layers.Layer):
         x = self.layer_2(x)
         return x
 
+    def get_config(self):
+        return {'action_lstm': self.layer_1,
+                'action': self.layer_2
+                }
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 
 class ObjectClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='object_block'):
@@ -46,6 +55,16 @@ class ObjectClassifierBlock(tf.keras.layers.Layer):
         x = self.layer_3(x)
         return x
 
+    def get_config(self):
+        return {'object_lstm_1': self.layer_1,
+                'object_lstm_2': self.layer_2,
+                'object': self.layer_3
+                }
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
+
 
 class LocationClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='location_block'):
@@ -64,6 +83,15 @@ class LocationClassifierBlock(tf.keras.layers.Layer):
         x = self.layer_1(inputs)
         x = self.layer_2(x)
         return x
+
+    def get_config(self):
+        return {'location_lstm': self.layer_1,
+                'location': self.layer_2
+                }
+
+    @classmethod
+    def from_config(cls, config):
+        return cls(**config)
 
 
 class TextMultiLabeledClassifier(tf.keras.Model):
@@ -87,3 +115,15 @@ class TextMultiLabeledClassifier(tf.keras.Model):
         x2 = self.object_block.call(x)
         x3 = self.locat_block.call(x)
         return [x1, x2, x3]
+
+    def get_config(self):
+        return {'embedding': self.embedding,
+                'dropout': self.dropout,
+                'action_block': ActionClassifierBlock,
+                'object_block': ObjectClassifierBlock,
+                'location_block': LocationClassifierBlock
+                }
+
+    @classmethod
+    def from_config(cls, config, custom_objects=None):
+        return cls(**config)
