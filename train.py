@@ -2,13 +2,14 @@ import os
 import tensorflow as tf
 from models import TextMultiLabeledClassifier
 from preprocessing import CustomTokenizer
-from utils.metrices import f1_score
+from utils.metrices import f1_score, print_f1_score
 import pandas as pd
 from datetime import datetime
 from pathlib import Path
 import argparse
 from utils.args import print_args
-from utils.read_yaml import load_yaml
+from utils.handle_yaml import load_yaml
+from utils.label_map import get_label2idx
 import joblib
 
 logdir = "notebooks/logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -38,17 +39,6 @@ def train(model, x_train, y_train, x_val, y_val, epochs=20, batch_size=128, lr=1
                                  callbacks=[tensorboard_callback]
                                  )
     return model, training_history
-
-
-def get_label2idx(data, label_cols):
-    label2idx = {}
-    for col in label_cols:
-        unique_labels = data[col].unique().tolist()
-        if 'none' in unique_labels:
-            nidx = unique_labels.index('none')
-            unique_labels[0], unique_labels[nidx] = unique_labels[nidx], unique_labels[0]
-        label2idx[col] = {v: i for i, v in enumerate(unique_labels)}
-    return label2idx
 
 
 def convert_label_str2int(x, label2idx):
@@ -83,19 +73,7 @@ def train_val_data(train_data, val_data):
 
     y_valid = [y_val_action, y_val_object, y_val_location]
 
-    return x_train, y_train, x_valid, y_valid, tokenizer.max_length, len(tokenizer.tokenizer.word_index) + 1
-
-
-def print_f1_score(y, y_pred):
-    act_f1_score = f1_score(y_true=y[0], y_pred=y_pred[0])
-    obj_f1_score = f1_score(y_true=y[1], y_pred=y_pred[1])
-    loc_f1_score = f1_score(y_true=y[2], y_pred=y_pred[2])
-
-    print("********* Validation F1 Score Report *********")
-    print("F1 Score for 'action': {}".format(act_f1_score))
-    print("F1 Score for 'object': {}".format(obj_f1_score))
-    print("F1 Score for 'location': {}".format(loc_f1_score))
-    print("******************** END ***********************")
+    return x_train, y_train, x_valid, y_valid, tokenizer
 
 
 def main(train_file, valid_file, configs, is_save_model=True):
@@ -106,12 +84,12 @@ def main(train_file, valid_file, configs, is_save_model=True):
                            usecols=configs['use_data_cols']
                            )
 
-    x_train, y_train, x_valid, y_valid, max_len, unique_tokens = train_val_data(train_data=train_data,
-                                                                                val_data=val_data)
+    x_train, y_train, x_valid, y_valid, tokenizer = train_val_data(train_data=train_data,
+                                                                   val_data=val_data)
 
     print("Building Model...")
-    model = build_model(max_len=max_len,
-                        unique_tokens=unique_tokens,
+    model = build_model(max_len=tokenizer.max_length,
+                        unique_tokens=len(tokenizer.tokenizer.word_index) + 1,
                         )
     model.summary()
 
@@ -129,13 +107,15 @@ def main(train_file, valid_file, configs, is_save_model=True):
     print_f1_score(y=y_valid, y_pred=y_preds)
 
     if is_save_model:
-        print("Saving the model...")
+        print("Saving the models...")
+        joblib.dump(tokenizer, "tokenizer.pkl")
         joblib.dump(model, "classifier.pkl")
     print("DONE.")
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Train the MultiLabel Classfier. You must have run train.py first.",
+    parser = argparse.ArgumentParser(description="Train the MultiLabel Classifier. "
+                                                 "You must have run train.py first.",
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter
                                      )
     parser.add_argument("-d", "--data", type=Path, default="data/",
@@ -144,8 +124,9 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--config", type=Path, default="config.yml",
                         help="Path to the config file for training")
 
-    parser.add_argument("-s", "--save", type=int, default=0,
-                        help="Boolean value for saving the model")
+    parser.add_argument("-s", "--save", type=int, default=1,
+                        help="Boolean value for saving the model after training. "
+                             "0 means not saving and 1 means save model")
 
     args = parser.parse_args()
 

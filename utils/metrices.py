@@ -37,3 +37,15 @@ def f1_score(y_true, y_pred):
     f1_measure = tf.math.divide((2 * tf.math.multiply(precision, recall)),
                                 tf.math.add(precision, recall) + 1e-9)
     return tf.reduce_mean(f1_measure)
+
+
+def print_f1_score(y, y_pred):
+    act_f1_score = f1_score(y_true=y[0], y_pred=y_pred[0])
+    obj_f1_score = f1_score(y_true=y[1], y_pred=y_pred[1])
+    loc_f1_score = f1_score(y_true=y[2], y_pred=y_pred[2])
+
+    print("********* Validation F1 Score Report *********")
+    print("F1 Score for 'action': {}".format(act_f1_score))
+    print("F1 Score for 'object': {}".format(obj_f1_score))
+    print("F1 Score for 'location': {}".format(loc_f1_score))
+    print("******************* END **********************")

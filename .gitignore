@@ -8,3 +8,5 @@ task_data.zip
 data/train_data.csv
 data/valid_data.csv
 classifier.pkl
+label_mapping.yml
+tokenizer.pkl

@@ -82,7 +82,7 @@ class TextMultiLabeledClassifier(tf.keras.Model):
 
     def call(self, inputs, *args, **kwargs):
         x = self.embedding(inputs)
-        x = self.dropout(x)
+        # x = self.dropout(x)
         x1 = self.action_block.call(x)
         x2 = self.object_block.call(x)
         x3 = self.locat_block.call(x)
