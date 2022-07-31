@@ -1,0 +1,9 @@
+.idea/
+wavs/
+notebooks/.ipynb_checkpoints
+notebooks/logs
+notebooks/glove*.*
+*/__pycache__
+task_data.zip
+train_data.csv
+valid_data.csv
