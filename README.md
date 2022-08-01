@@ -11,10 +11,10 @@ Follow steps:
 7. Evaluate Model: `python evaluation.py -d ./data/valid_data.csv`
 
 ### Model Architecture
-<img src="./notebooks/model.png">
+![model_architecture](./notebooks/model.png)
 
 
 #### Training Loss Curve
-<img src="./notebooks/epoch_loss.svg">
+![loss_curve](./notebooks/epoch_loss.svg)
 
 Ongoing Project...
