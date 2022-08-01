@@ -3,6 +3,6 @@ use_data_cols:
   - 'action'
   - 'object'
   - 'location'
-epochs: 50
+epochs: 100
 batch_size: 128
 learning_rate: 3e-4
