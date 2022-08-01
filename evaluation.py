@@ -39,12 +39,11 @@ def main(test_file, model_file, tokenizer_file, label_map_file, configs):
                                    label_map_file=label_map_file)
 
     # model loading
-    model = build_model(max_len=tokenizer.max_length,
-                        unique_tokens=len(tokenizer.tokenizer.word_index) + 1, )
+    print("Loading model...")
     model = tf.keras.models.load_model(model_file,
-                                       custom_objects={'model': model,
-                                                       'classifier': TextMultiLabeledClassifier,
-                                                       'f1_score': f1_score})
+                                       custom_objects={'f1_score': f1_score}
+                                       )
+    print("Model Loaded.")
 
     # model prediction
     loss = model.evaluate(x)
@@ -63,7 +62,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--data", type=Path, default="data/valid_data.csv",
                         help="Path to the file where test csv file is present.")
 
-    parser.add_argument("-m", "--model", type=Path, default="saved_model/my_model",
+    parser.add_argument("-m", "--model", type=Path, default="saved_model/tf_model",
                         help="Path to the directory where checkpoints saved.")
 
     parser.add_argument("-t", "--tokenizer", type=Path, default="tokenizer.pkl",

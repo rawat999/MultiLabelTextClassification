@@ -103,7 +103,7 @@ class TextMultiLabeledClassifier(tf.keras.Model):
                                                    trainable=True,
                                                    name='embedding'
                                                    )
-        self.dropout = tf.keras.layers.Dropout(rate=0.2, name='dropout')
+        # self.dropout = tf.keras.layers.Dropout(rate=0.2, name='dropout')
         self.action_block = ActionClassifierBlock()
         self.object_block = ObjectClassifierBlock()
         self.locat_block = LocationClassifierBlock()
@@ -118,10 +118,10 @@ class TextMultiLabeledClassifier(tf.keras.Model):
 
     def get_config(self):
         return {'embedding': self.embedding,
-                'dropout': self.dropout,
-                'action_block': ActionClassifierBlock,
-                'object_block': ObjectClassifierBlock,
-                'location_block': LocationClassifierBlock
+                # 'dropout': self.dropout,
+                'action_block': self.action_block,
+                'object_block': self.object_block,
+                'location_block': self.locat_block
                 }
 
     @classmethod

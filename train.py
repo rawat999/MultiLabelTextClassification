@@ -108,7 +108,7 @@ def main(train_file, valid_file, configs, is_save_model=True):
         print("Saving the tokenizer model...")
         joblib.dump(tokenizer, "tokenizer.pkl")
         print("Saving Model...")
-        model.save("saved_model/my_model")
+        model.save("saved_model/tf_model")
     print("DONE.")
 
 
