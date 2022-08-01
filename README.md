@@ -6,7 +6,7 @@ Follow steps:
 2. change your directory into `cd MultiLabelTextClassification`
 3. Download [dataset](https://drive.google.com/file/d/1slGtHKHYTtiuC98yomV0hP3C85Q5V8sg/view?usp=sharing)
 4. Extract the dataset into `data/` folder
-5. Install dependencies using `pip install -r requirements`
+5. Install dependencies using `pip install -r requirements.txt`
 6. Train MultiClassifier module using command: `python train.py`
 7. Evaluate Model: `python evaluation.py -d ./data/valid_data.csv`
 
