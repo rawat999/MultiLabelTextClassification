@@ -4,11 +4,10 @@ import joblib
 from pathlib import Path
 import pandas as pd
 import tensorflow as tf
-from models import build_model
-from models import TextMultiLabeledClassifier
 from utils.handle_yaml import load_yaml
 from utils.metrices import f1_score
 from utils.args import print_args
+import time
 
 
 def process_data(test_data, tokenizer_file, label_map_file):
@@ -40,18 +39,35 @@ def main(test_file, model_file, tokenizer_file, label_map_file, configs):
 
     # model loading
     print("Loading model...")
+    # model = joblib.load(model_file)
     model = tf.keras.models.load_model(model_file,
                                        custom_objects={'f1_score': f1_score}
                                        )
     print("Model Loaded.")
 
     # model prediction
-    loss = model.evaluate(x)
-    print(loss)
+    metrices = model.evaluate(x=x, y=y)
 
     # print f1 scores
-    print("Evaluation Loss: {}".format(loss))
-    # print("Evaluation Accuracy: {}".format(accuracy))
+    time.sleep(10)
+    print("\n************ Evaluation Report *******************")
+    print("Losses:")
+    print("Evaluation Loss: {}".format(metrices[0]))
+    print("Evaluation Loss ('Action'): {}".format(metrices[1]))
+    print("Evaluation Loss ('Object'): {}".format(metrices[2]))
+    print("Evaluation Loss ('Location'): {}".format(metrices[3]))
+
+    print("\nAccuracy:")
+    print("'Action' Head: {}".format(metrices[4]))
+    print("'Object' Head: {}".format(metrices[6]))
+    print("'Location' Head: {}".format(metrices[8]))
+
+    print("\nF1 Score:")
+    print("'Action' Head: {}".format(metrices[5]))
+    print("'Object' Head: {}".format(metrices[7]))
+    print("'Location' Head: {}".format(metrices[9]))
+
+    print("*************** END *************************")
 
 
 if __name__ == '__main__':
@@ -62,7 +78,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--data", type=Path, default="data/valid_data.csv",
                         help="Path to the file where test csv file is present.")
 
-    parser.add_argument("-m", "--model", type=Path, default="saved_model/tf_model",
+    parser.add_argument("-m", "--model", type=Path, default="saved_model/tf_model.h5",
                         help="Path to the directory where checkpoints saved.")
 
     parser.add_argument("-t", "--tokenizer", type=Path, default="tokenizer.pkl",

@@ -5,8 +5,8 @@ class ActionClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='action_block'):
         super(ActionClassifierBlock, self).__init__(name=name)
         self.layer_1 = tf.keras.layers.LSTM(units=128,
-                                            dropout=0.2,
-                                            recurrent_dropout=0.5,
+                                            # dropout=0.2,
+                                            # recurrent_dropout=0.5,
                                             name='action_lstm'
                                             )
         self.layer_2 = tf.keras.layers.Dense(units=6,
@@ -20,9 +20,11 @@ class ActionClassifierBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self):
-        return {'action_lstm': self.layer_1,
-                'action': self.layer_2
-                }
+        config = super(ActionClassifierBlock, self).get_config()
+        config.update({'action_lstm': self.layer_1,
+                       'action': self.layer_2
+                       })
+        return config
 
     @classmethod
     def from_config(cls, config):
@@ -33,14 +35,14 @@ class ObjectClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='object_block'):
         super(ObjectClassifierBlock, self).__init__(name=name)
         self.layer_1 = tf.keras.layers.LSTM(units=128,
-                                            dropout=0.2,
-                                            recurrent_dropout=0.5,
+                                            # dropout=0.2,
+                                            # recurrent_dropout=0.5,
                                             return_sequences=True,
                                             name='object_lstm_1'
                                             )
         self.layer_2 = tf.keras.layers.LSTM(units=32,
-                                            dropout=0.2,
-                                            recurrent_dropout=0.5,
+                                            # dropout=0.2,
+                                            # recurrent_dropout=0.5,
                                             return_sequences=False,
                                             name='object_lstm_2'
                                             )
@@ -56,10 +58,12 @@ class ObjectClassifierBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self):
-        return {'object_lstm_1': self.layer_1,
-                'object_lstm_2': self.layer_2,
-                'object': self.layer_3
-                }
+        config = super(ObjectClassifierBlock, self).get_config()
+        config.update({'object_lstm_1': self.layer_1,
+                       'object_lstm_2': self.layer_2,
+                       'object': self.layer_3
+                       })
+        return config
 
     @classmethod
     def from_config(cls, config):
@@ -70,8 +74,8 @@ class LocationClassifierBlock(tf.keras.layers.Layer):
     def __init__(self, name='location_block'):
         super(LocationClassifierBlock, self).__init__(name=name)
         self.layer_1 = tf.keras.layers.LSTM(units=64,
-                                            dropout=0.2,
-                                            recurrent_dropout=0.5,
+                                            # dropout=0.2,
+                                            # recurrent_dropout=0.5,
                                             name='location_lstm'
                                             )
         self.layer_2 = tf.keras.layers.Dense(units=4,
@@ -85,9 +89,11 @@ class LocationClassifierBlock(tf.keras.layers.Layer):
         return x
 
     def get_config(self):
-        return {'location_lstm': self.layer_1,
-                'location': self.layer_2
-                }
+        config = super(LocationClassifierBlock, self).get_config()
+        config.update({'location_lstm': self.layer_1,
+                       'location': self.layer_2
+                       })
+        return config
 
     @classmethod
     def from_config(cls, config):
@@ -117,12 +123,14 @@ class TextMultiLabeledClassifier(tf.keras.Model):
         return [x1, x2, x3]
 
     def get_config(self):
-        return {'embedding': self.embedding,
-                # 'dropout': self.dropout,
-                'action_block': self.action_block,
-                'object_block': self.object_block,
-                'location_block': self.locat_block
-                }
+        config = super(TextMultiLabeledClassifier, self).get_config()
+        config.update({'embedding': self.embedding,
+                       # 'dropout': self.dropout,
+                       'action_block': self.action_block,
+                       'object_block': self.object_block,
+                       'location_block': self.locat_block
+                       })
+        return config
 
     @classmethod
     def from_config(cls, config, custom_objects=None):
