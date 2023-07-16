@@ -1,4 +1,6 @@
 .idea/
+data/
+env/
 data/wavs/
 notebooks/.ipynb_checkpoints
 notebooks/logs
