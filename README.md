@@ -5,7 +5,7 @@
 1. Clone this repo `git clone https://github.com/rawat999/MultiLabelTextClassification.git`
 2. Change your directory into `cd MultiLabelTextClassification` 
 3. Create Virtual Environment with following steps:
-    - Make sure you have install python3.9
+    - Make sure you have installed python3.9
     - Upgrade pip: `python -m pip install --upgrade pip`
     - Check pip version: `python -m pip --version`
     - Install virtualenv package: `python -m pip install --user virtualenv`
