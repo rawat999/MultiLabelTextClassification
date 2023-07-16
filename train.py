@@ -109,7 +109,7 @@ def main(train_file, valid_file, configs, is_save_model=True):
         joblib.dump(tokenizer, "tokenizer.pkl")
         print("Saving TF Model...")
         # joblib.dump(model, "saved_model/tf_model.h5")
-        model.save("saved_model/tf_model.h5")
+        model.save("saved_model/tf_model.keras")
     print("DONE.")
 
 

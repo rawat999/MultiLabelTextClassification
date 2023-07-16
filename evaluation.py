@@ -78,7 +78,7 @@ if __name__ == '__main__':
     parser.add_argument("-d", "--data", type=Path, default="data/valid_data.csv",
                         help="Path to the file where test csv file is present.")
 
-    parser.add_argument("-m", "--model", type=Path, default="saved_model/tf_model.h5",
+    parser.add_argument("-m", "--model", type=Path, default="saved_model/tf_model.keras",
                         help="Path to the directory where checkpoints saved.")
 
     parser.add_argument("-t", "--tokenizer", type=Path, default="tokenizer.pkl",
