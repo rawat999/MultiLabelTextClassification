@@ -24,4 +24,6 @@
 #### Training Loss Curve
 <img src="./notebooks/epoch_loss.svg" width="100%" alt="loss_curve">
 
-Ongoing Project...
+
+#### Evaluation Metrics
+<img src="./notebooks/evaluation_report.png" width="100%" alt="model_architecture">
